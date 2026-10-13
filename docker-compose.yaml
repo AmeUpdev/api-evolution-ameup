@@ -1,0 +1,56 @@
+version: "3.8"
+
+services:
+
+  api:
+    container_name: evolution_api
+    image: evoapicloud/evolution-api:2.4.0-rc2
+    restart: always
+
+    depends_on:
+      - evolution-postgres
+
+    ports:
+      - "8080:8080"
+
+    volumes:
+      - evolution_instances:/evolution/instances
+
+    env_file:
+      - .env
+
+    networks:
+      - evolution-net
+
+  evolution-postgres:
+    container_name: evolution_postgres
+    image: postgres:15
+    restart: always
+
+    env_file:
+      - .env
+
+    environment:
+      POSTGRES_DB: ${POSTGRES_DATABASE}
+      POSTGRES_USER: ${POSTGRES_USERNAME}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    networks:
+      - evolution-net
+
+volumes:
+  evolution_instances:
+    external: true
+    name: ameup---whatsapp_evolution_instances
+
+  postgres_data:
+    external: true
+    name: ameup---whatsapp_postgres_data
+
+networks:
+  evolution-net:
+    external: true
+    name: ameup---whatsapp_evolution-net
